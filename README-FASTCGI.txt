@@ -38,7 +38,7 @@ command displays the correct value:
 Optionally, replace "/usr/lib/cgi-bin" below with another directory;
 Apache must have the directory configured with Options +ExecCGI.
 
-Create file /etc/apache2/sites-available/abe with these contents:
+Create file /etc/apache2/sites-available/abe.conf with these contents:
 
     <VirtualHost *:80>
         ServerName YOUR.ABE.DOMAIN
