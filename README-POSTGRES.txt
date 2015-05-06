@@ -6,7 +6,7 @@ up to date.
 Choose or create a system account to run Abe.  Replace USER with its
 username throughout these instructions.
 
-    apt-get install python2.7 python-crypto postgresql-8.4 python-psycopg2
+    apt-get install python2.7 python-crypto postgresql python-psycopg2
     sudo -u postgres createdb abe
     sudo -u postgres createuser USER
 
