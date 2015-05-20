@@ -1693,6 +1693,11 @@ class Abe:
             return 'returns unspent transactions for the given address:\n' \
                 '/chain/CHAIN/q/unspent/ADDRESS\n'
 
+        if ret is None:
+            return 'ERROR: address not in the chain.'
+
+        return ret
+
     def handle_download(abe, page):
         name = abe.args.download_name
         if name is None:
