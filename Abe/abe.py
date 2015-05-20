@@ -1686,6 +1686,13 @@ class Abe:
         return "\n".join(abe.store.firstbits_to_addresses(
                 fb, chain_id = (chain and chain.id)))
 
+    def q_unspent(abe, page, chain):
+        """returns a list of unspent outputs for an address"""
+        addr = wsgiref.util.shift_path_info(page['env'])
+        if chain is None or addr is None:
+            return 'returns unspent transactions for the given address:\n' \
+                '/chain/CHAIN/q/unspent/ADDRESS\n'
+
     def handle_download(abe, page):
         name = abe.args.download_name
         if name is None:
