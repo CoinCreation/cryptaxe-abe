@@ -1687,7 +1687,7 @@ class Abe:
                 fb, chain_id = (chain and chain.id)))
 
     def q_unspent(abe, page, chain):
-        """returns a list of unspent outputs for an address"""
+        """returns a list of unspent outputs for an address."""
 
         addr = wsgiref.util.shift_path_info(page['env'])
         if chain is None or addr is None:
