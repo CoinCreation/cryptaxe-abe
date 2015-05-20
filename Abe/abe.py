@@ -1688,10 +1688,15 @@ class Abe:
 
     def q_unspent(abe, page, chain):
         """returns a list of unspent outputs for an address"""
+
         addr = wsgiref.util.shift_path_info(page['env'])
         if chain is None or addr is None:
-            return 'returns unspent transactions for the given address:\n' \
-                '/chain/CHAIN/q/unspent/ADDRESS\n'
+            return 'Returns unspent transactions for the given address:' \
+                ' Unspent\n' \
+                'See http://.com/.\n' \
+                'Returns unspent transactions.\n' \
+                '/chain/CHAIN/q/unspent/ADDRESS\n' \
+                '/q/unspent/ADDRESS\n'
 
         if ret is None:
             return 'ERROR: address not in the chain.'
