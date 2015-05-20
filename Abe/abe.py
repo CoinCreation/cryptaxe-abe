@@ -1686,7 +1686,7 @@ class Abe:
         return "\n".join(abe.store.firstbits_to_addresses(
                 fb, chain_id = (chain and chain.id)))
 
-    def q_unspent(abe, page, chain):
+    def q_getunspent(abe, page, chain):
         """unspent."""
         addr = wsgiref.util.shift_path_info(page['env'])
         if addr is None:
