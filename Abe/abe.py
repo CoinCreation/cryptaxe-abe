@@ -1696,7 +1696,8 @@ class Abe:
                 " Example.\n" \
                 "/chain/CHAIN/q/unspent/ADDRESS\n" \
                 "/q/unspent/ADDRESS\n"
-        return 'unspent'
+
+        return do_unspent(abe, page, chain)
 
     def handle_download(abe, page):
         name = abe.args.download_name
