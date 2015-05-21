@@ -1687,7 +1687,7 @@ class Abe:
                 fb, chain_id = (chain and chain.id)))
 
     def q_getunspent(abe, page, chain):
-        """unspent."""
+        """returns the unspent outs at address."""
         addr = wsgiref.util.shift_path_info(page['env'])
         if addr is None:
             return \
@@ -1697,7 +1697,104 @@ class Abe:
                 "/chain/CHAIN/q/unspent/ADDRESS\n" \
                 "/q/unspent/ADDRESS\n"
 
-        return do_unspent(abe, page, chain)
+        if chain:
+            chain_id = chain.id
+            bind = [chain_id]
+        else:
+            chain_id = None
+            bind = []
+
+        hashes = []
+        good_addrs = []
+        for address in addr:
+            try:
+                hashes.append(abe.store.binin(
+                        base58.bc_address_to_hash_160(address)))
+                good_addrs.append(address)
+            except Exception:
+                pass
+        addrs = good_addrs
+        bind += hashes
+
+        if len(hashes) == 0:  # Address(es) are invalid.
+            return 'Error getting unspent outputs'  # blockchain.info compatible
+
+        placeholders = "?" + (",?" * (len(hashes)-1))
+
+        max_rows = abe.address_history_rows_max
+        if max_rows >= 0:
+            bind += [max_rows + 1]
+
+        spent = set()
+        for txout_id, spent_chain_id in abe.store.selectall("""
+            SELECT txin.txout_id, cc.chain_id
+              FROM chain_candidate cc
+              JOIN block_tx ON (block_tx.block_id = cc.block_id)
+              JOIN txin ON (txin.tx_id = block_tx.tx_id)
+              JOIN txout prevout ON (txin.txout_id = prevout.txout_id)
+              JOIN pubkey ON (pubkey.pubkey_id = prevout.pubkey_id)
+             WHERE cc.in_longest = 1""" + ("" if chain_id is None else """
+               AND cc.chain_id = ?""") + """
+               AND pubkey.pubkey_hash IN (""" + placeholders + """)""" + (
+                "" if max_rows < 0 else """
+             LIMIT ?"""), bind):
+            spent.add((int(txout_id), int(spent_chain_id)))
+
+        abe.log.debug('spent: %s', spent)
+
+        received_rows = abe.store.selectall("""
+            SELECT
+                txout.txout_id,
+                cc.chain_id,
+                tx.tx_hash,
+                txout.txout_pos,
+                txout.txout_scriptPubKey,
+                txout.txout_value,
+                cc.block_height
+              FROM chain_candidate cc
+              JOIN block_tx ON (block_tx.block_id = cc.block_id)
+              JOIN tx ON (tx.tx_id = block_tx.tx_id)
+              JOIN txout ON (txout.tx_id = tx.tx_id)
+              JOIN pubkey ON (pubkey.pubkey_id = txout.pubkey_id)
+             WHERE cc.in_longest = 1""" + ("" if chain_id is None else """
+               AND cc.chain_id = ?""") + """
+               AND pubkey.pubkey_hash IN (""" + placeholders + """)""" + (
+                "" if max_rows < 0 else """
+             ORDER BY cc.block_height,
+                   block_tx.tx_pos,
+                   txout.txout_pos
+             LIMIT ?"""), bind)
+
+        if max_rows >= 0 and len(received_rows) > max_rows:
+            return "ERROR: too many records to process"
+
+        rows = []
+        for row in received_rows:
+            key = (int(row[0]), int(row[1]))
+            if key in spent:
+                continue
+            rows.append(row[2:])
+
+        if len(rows) == 0:
+            return 'No free outputs to spend [' + '|'.join(addrs) + ']'
+
+        out = []
+        for row in rows:
+            tx_hash, out_pos, script, value, height = row
+            tx_hash = abe.store.hashout_hex(tx_hash)
+            out_pos = None if out_pos is None else int(out_pos)
+            script = abe.store.binout_hex(script)
+            value = None if value is None else int(value)
+            height = None if height is None else int(height)
+            out.append({
+                    'tx_hash': tx_hash,
+                    'tx_output_n': out_pos,
+                    'script': script,
+                    'value': value,
+                    'value_hex': None if value is None else "%x" % value,
+                    'block_number': height})
+
+        return json.dumps({ 'unspent_outputs': out }, sort_keys=True, indent=2)
 
     def handle_download(abe, page):
         name = abe.args.download_name
