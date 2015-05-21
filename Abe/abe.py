@@ -1690,8 +1690,7 @@ class Abe:
         """returns the unspent outs at address."""
         addr = wsgiref.util.shift_path_info(page['env'])
         if addr is None:
-            return \
-                "Returns the unspent.\n" \
+            return "Returns the unspent.\n" \
                 "If ADDRESS is invalid, returns nothing" \
                 " Example.\n" \
                 "/chain/CHAIN/q/unspent/ADDRESS\n" \
@@ -1706,18 +1705,19 @@ class Abe:
 
         hashes = []
         good_addrs = []
-        for address in addr:
-            try:
-                hashes.append(abe.store.binin(
-                        base58.bc_address_to_hash_160(address)))
-                good_addrs.append(address)
-            except Exception:
-                pass
+
+        try:
+            hashes.append(abe.store.binin(
+                    base58.bc_address_to_hash_160(addr)))
+            good_addrs.append(addr)
+        except Exception:
+            pass
+
         addrs = good_addrs
         bind += hashes
 
         if len(hashes) == 0:  # Address(es) are invalid.
-            return 'Error getting unspent outputs'  # blockchain.info compatible
+            return 'Error getting unspent outputs'
 
         placeholders = "?" + (",?" * (len(hashes)-1))
 
