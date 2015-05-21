@@ -1786,12 +1786,7 @@ class Abe:
             script = abe.store.binout_hex(script)
             value = None if value is None else int(value)
             height = None if height is None else int(height)
-            out.append({
-                    'tx_hash': tx_hash,
-                    'tx_output_n': out_pos,
-                    'script': script,
-                    'value_hex': None if value is None else "%x" % value,
-                    'block_number': height})
+            out.append(tx_hash, out_pos, script, "%x" % value, height, "\n")
 
         return out
 
