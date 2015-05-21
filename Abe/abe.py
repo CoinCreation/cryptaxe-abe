@@ -1786,7 +1786,7 @@ class Abe:
             script = abe.store.binout_hex(script)
             value = None if value is None else int(value)  # Might have to change this to 0 for output alignment
             height = None if height is None else int(height)
-            out.append(tx_hash, out_pos, script, "%x" % value, height)
+            out.append({tx_hash, out_pos, script, "%x" % value, height})
 
         return "\n".join(out)
 
