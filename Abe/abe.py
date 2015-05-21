@@ -1784,11 +1784,11 @@ class Abe:
             tx_hash = abe.store.hashout_hex(tx_hash)
             out_pos = None if out_pos is None else int(out_pos)
             script = abe.store.binout_hex(script)
-            value = None if value is None else int(value)
+            value = None if value is None else int(value)  # Might have to change this to 0 for output alignment
             height = None if height is None else int(height)
-            out.append(tx_hash, out_pos, script, "%x" % value, height, "\n")
+            out.append(tx_hash, out_pos, script, "%x" % value, height)
 
-        return out
+        return "\n".join(out)
 
     def handle_download(abe, page):
         name = abe.args.download_name
