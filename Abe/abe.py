@@ -1788,7 +1788,8 @@ class Abe:
             height = None if height is None else int(height)
             out.append({tx_hash, out_pos, script, "%x" % value, height})
 
-        return "\n".join(out)
+        outputText = "\n".join(out)
+        return outputText
 
     def handle_download(abe, page):
         name = abe.args.download_name
