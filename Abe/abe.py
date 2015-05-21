@@ -1790,11 +1790,10 @@ class Abe:
                     'tx_hash': tx_hash,
                     'tx_output_n': out_pos,
                     'script': script,
-                    'value': value,
                     'value_hex': None if value is None else "%x" % value,
                     'block_number': height})
 
-        return json.dumps({ 'unspent_outputs': out }, sort_keys=True, indent=2)
+        return out
 
     def handle_download(abe, page):
         name = abe.args.download_name
