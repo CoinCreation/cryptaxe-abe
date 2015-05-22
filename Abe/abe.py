@@ -1787,7 +1787,7 @@ class Abe:
             value = None if value is None else int(value)
             height = None if height is None else int(height)
             unspent = [tx_hash, out_pos, script, "%x" % value, height]
-            text = ", ".join(str(i) for i in unspent)
+            text = " ".join(str(i) for i in unspent)
             out.append(text)
 
         outputText = "\n".join(str(i) for i in out)
