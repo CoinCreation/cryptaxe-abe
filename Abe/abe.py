@@ -1786,7 +1786,7 @@ class Abe:
             script = abe.store.binout_hex(script)
             value = None if value is None else int(value)
             height = None if height is None else int(height)
-            unspent = [tx_hash, out_pos, script, "%x" % value, height]
+            unspent = [tx_hash, out_pos, script, value, height]
             text = " ".join(str(i) for i in unspent)
             out.append(text)
 
